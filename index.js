@@ -6,16 +6,14 @@ const dotenv = require("dotenv").config();
 const PROJECT_NAME = "Keystone Blog";
 const adapterConfig = { mongoUri: process.env.MONGO_URI };
 
-/**
- * You've got a new KeystoneJS Project! Things you might want to do next:
- * - Add adapter config options (See: https://keystonejs.com/keystonejs/adapter-mongoose/)
- * - Select configure access control and authentication (See: https://keystonejs.com/api/access-control)
- */
+const PostSchema=require('./lists/Post')
 
 const keystone = new Keystone({
   adapter: new Adapter(adapterConfig),
   cookieSecret:process.env.COOKIE_SECRET
 });
+
+keystone.createList('Post',PostSchema)
 
 module.exports = {
   keystone,
