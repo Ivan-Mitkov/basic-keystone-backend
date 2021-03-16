@@ -32,6 +32,14 @@ module.exports = {
   keystone,
   apps: [
     new GraphQLApp(),
-    new AdminUIApp({ name: PROJECT_NAME, enableDefaultRoute: true,authStrategy }),
+    new AdminUIApp({
+      name: PROJECT_NAME,
+      enableDefaultRoute: true,
+      authStrategy,
+      //access control from admin panel
+      isAccessAllowed: ({ authentication: { item: user } }) => {
+        return !!user && !!user.isAdmin;
+      },
+    }),
   ],
 };
