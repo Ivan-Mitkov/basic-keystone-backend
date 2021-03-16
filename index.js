@@ -16,8 +16,32 @@ const keystone = new Keystone({
   cookieSecret: process.env.COOKIE_SECRET,
 });
 
-keystone.createList("Post", PostSchema);
-keystone.createList("User", UserSchema);
+//access control from admin panel
+const isAdmin = ({ authentication: { item: user } }) => {
+  return !!user && !!user.isAdmin;
+};
+const isLoggedIn = ({ authentication: { item: user } }) => {
+  return !!user;
+};
+
+keystone.createList("Post", {
+  fields: PostSchema.fields,
+  access: {
+    read: true,
+    create: isLoggedIn,
+    update: isLoggedIn,
+    delete: isLoggedIn,
+  },
+});
+keystone.createList("User", {
+  fields: UserSchema.fields,
+  access: {
+    read: true,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
+  },
+});
 //password under the lists
 const authStrategy = keystone.createAuthStrategy({
   type: PasswordAuthStrategy,
@@ -36,10 +60,7 @@ module.exports = {
       name: PROJECT_NAME,
       enableDefaultRoute: true,
       authStrategy,
-      //access control from admin panel
-      isAccessAllowed: ({ authentication: { item: user } }) => {
-        return !!user && !!user.isAdmin;
-      },
+      isAccessAllowed: isAdmin,
     }),
   ],
 };
